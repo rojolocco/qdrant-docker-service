@@ -1,0 +1,9 @@
+# env
+.env.dev
+.env.prod
+
+# docker
+docker-compose.dev.yml
+
+# python test
+python_test/

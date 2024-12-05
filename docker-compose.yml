@@ -1,0 +1,27 @@
+services:
+  qdrant:
+    image: qdrant/qdrant:v1.12.4
+    container_name: qdrant_prod
+    restart: always
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_storage:/qdrant/storage
+    networks:
+      - caddy_network
+    environment:
+      QDRANT__SERVICE__GRPC_PORT: 6334
+      QDRANT__STORAGE__PATH: /qdrant/storage
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "0.5"
+
+volumes:
+  qdrant_storage:
+    driver: local
+
+networks:
+  caddy_network:
+    external: true
