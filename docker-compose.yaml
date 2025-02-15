@@ -1,6 +1,6 @@
 services:
   qdrant:
-    image: qdrant/qdrant:v1.12.5
+    image: qdrant/qdrant
     container_name: qdrant
     restart: always
     ports:
@@ -9,7 +9,8 @@ services:
       - qdrant_data:/qdrant/storage
     networks:
       - caddy_network
-    env_file: .env.prod
+    env_file: 
+      - .env
     deploy:
       resources:
         limits:
