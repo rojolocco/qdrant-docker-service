@@ -1,116 +1,69 @@
-# Qdrant en Producción
+# Qdrant Vector Search Engine
 
-Este directorio contiene la configuración para desplegar **Qdrant** en un entorno de producción utilizando Docker Compose. **Qdrant** es un motor de búsqueda vectorial que permite almacenar y buscar embeddings de manera eficiente.
+This project provides a Docker setup for running Qdrant, a powerful vector search engine designed for high-performance similarity search and retrieval.
 
----
+## Description
 
-## **Estructura de Archivos**
+This repository contains Docker configurations to easily deploy Qdrant. Qdrant is an open-source vector search engine that enables you to perform efficient similarity searches on large datasets, making it ideal for applications in machine learning, recommendation systems, and more.
 
-```plaintext
-qdrant/
-├── .env.prod                  # Variables de entorno para producción (opcional)
-├── docker-compose.yml         # Docker Compose para despliegue en producción
-```
+## Services
 
----
+- **Qdrant**: The main service that runs the Qdrant vector search engine.
+  - **Container Name**: qdrant
+  - **Image**: qdrant/qdrant
+  - **Ports**: Exposed on port (6333)
+  - **Volumes**: Data is persisted in `qdrant_data` volume, mapped to `/qdrant/storage`
+  - **Environment Variables**: Loaded from `.env`
+  - **Restart Policy**: Always restart the container
+  - **Resource Limits**: Memory limit of `2G` and CPU limit of `1`
 
-## **Requisitos Previos**
+## Installation
 
-1. **Docker y Docker Compose** deben estar instalados.
-2. **Red compartida** (`caddy_network`) creada previamente:
+1. Clone the repository:
 
    ```bash
-   docker network create caddy_network
+   git clone https://github.com/yourusername/qdrant.git
    ```
 
----
+2. Navigate to the project directory:
 
-## **Configuración de Variables de Entorno**
+   ```bash
+   cd qdrant
+   ```
 
-Las variables de entorno para este despliegue se definen directamente en el archivo `docker-compose.yml`. Sin embargo, puedes optar por moverlas a un archivo `.env.prod` si prefieres.
+3. Start the services using Docker Compose:
 
-### **Variables Importantes**
+   ```bash
+   docker-compose up -d
+   ```
 
-- `QDRANT__SERVICE__GRPC_PORT`: Define el puerto gRPC para Qdrant.
-- `QDRANT__STORAGE__PATH`: Ruta para el almacenamiento persistente de Qdrant.
+## Usage
 
----
+- Access Qdrant at [http://localhost:6333](http://localhost:6333) to interact with the vector search engine.
 
-## **Uso**
+## Contributing
 
-### **Levantar el servicio en producción**
+1. Fork the repository.
+2. Create a new branch:
 
-Para levantar **Qdrant** en producción, utiliza el siguiente comando:
+   ```bash
+   git checkout -b feature/YourFeature
+   ```
 
-```bash
-docker-compose -f docker-compose.yml up -d
-```
+3. Make your changes and commit them:
 
-### **Detener el servicio**
+   ```bash
+   git commit -m "Add your message"
+   ```
 
-Para detener el servicio:
+4. Push to the branch:
 
-```bash
-docker-compose -f docker-compose.yml down
-```
+   ```bash
+   git push origin feature/YourFeature
+   ```
 
-### **Verificar el estado del contenedor**
+5. Open a pull request.
 
-Para verificar que el contenedor de **Qdrant** está corriendo:
+## License
 
-```bash
-docker ps
-```
-
----
-
-## **Acceso a Qdrant**
-
-Puedes acceder a **Qdrant** a través de su API REST en `http://<tu_ip>:6333`. Esta API te permite interactuar con las colecciones, agregar datos, y realizar búsquedas vectoriales.
-
----
-
-## **Persistencia de Datos**
-
-Los datos de **Qdrant** se almacenan en el volumen `qdrant_storage`. Este volumen asegura que los datos no se pierdan al detener o reiniciar el contenedor.
-
-### **Ubicación del Volumen**
-
-El volumen se define en el archivo `docker-compose.yml` y es gestionado por Docker.
-
-Para eliminar los datos almacenados:
-
-```bash
-docker volume rm qdrant_storage
-```
-
-> **Advertencia**: Esto eliminará todos los datos almacenados en Qdrant.
-
----
-
-## **Solución de Problemas**
-
-### **Error: `Cannot connect to Qdrant`**
-
-- Verifica que el contenedor de **Qdrant** esté en ejecución y accesible en el puerto `6333`.
-- Asegúrate de que el servicio esté conectado a la red correcta (`caddy_network`).
-
-### **Advertencia: `Storage path not found`**
-
-- Asegúrate de que el volumen `qdrant_storage` está correctamente montado y que la ruta `/qdrant/storage` sea accesible.
-
----
-
-## **Contribución**
-
-Si deseas mejorar esta configuración o agregar nuevas funcionalidades, sigue estos pasos:
-
-1. Haz un fork de este repositorio.
-2. Realiza tus cambios en una nueva rama.
-3. Envía un pull request con tus mejoras.
-
----
-
-## **Licencia**
-
-Este proyecto está bajo la licencia MIT. Consulta el archivo `LICENSE` para más detalles.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
