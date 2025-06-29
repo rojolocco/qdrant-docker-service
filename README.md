@@ -1,69 +1,150 @@
 # Qdrant Vector Search Engine
 
-This project provides a Docker setup for running Qdrant, a powerful vector search engine designed for high-performance similarity search and retrieval.
+This repository contains a Docker Compose setup for running [Qdrant](https://qdrant.tech/), a high-performance vector similarity search engine and vector database.
 
-## Description
+## What is Qdrant?
 
-This repository contains Docker configurations to easily deploy Qdrant. Qdrant is an open-source vector search engine that enables you to perform efficient similarity searches on large datasets, making it ideal for applications in machine learning, recommendation systems, and more.
+Qdrant is a vector similarity search engine designed for production use. It provides a production-ready service with a convenient API to store, search, and manage points (vectors with payload).
 
-## Services
+### Key Features
 
-- **Qdrant**: The main service that runs the Qdrant vector search engine.
-  - **Container Name**: qdrant
-  - **Image**: qdrant/qdrant
-  - **Ports**: Exposed on port (6333)
-  - **Volumes**: Data is persisted in `qdrant_data` volume, mapped to `/qdrant/storage`
-  - **Environment Variables**: Loaded from `.env`
-  - **Restart Policy**: Always restart the container
-  - **Resource Limits**: Memory limit of `2G` and CPU limit of `1`
+- **Vector Search**: Performs high-performance vector similarity search
+- **Filtering**: Combines vector search with payload filtering
+- **CRUD Operations**: Full-featured API for managing collections, points, and payload
+- **Persistence**: Stores all data on disk with the ability to recover from interruptions
+- **Distributed**: Scales horizontally to handle large datasets
+- **Optimized**: Written in Rust for maximum performance and memory efficiency
 
-## Installation
+## Use Cases
 
-1. Clone the repository:
+- Semantic search
+- Recommendation systems
+- Image similarity
+- Anomaly detection
+- AI applications requiring vector search
+
+## Prerequisites
+
+- Docker and Docker Compose
+- At least 1GB of RAM available for the Qdrant container
+
+## Setup Instructions
+
+1. Clone this repository:
 
    ```bash
-   git clone https://github.com/yourusername/qdrant.git
+   git clone <repository-url>
+   cd qdrant-docker-service
    ```
 
-2. Navigate to the project directory:
+2. Create an environment file from the example:
 
    ```bash
-   cd qdrant
+   cp .env.example .env
    ```
 
-3. Start the services using Docker Compose:
+3. (Optional) Configure the API key in the `.env` file:
+
+   ```env
+   QDRANT__SERVICE__API_KEY=your-secure-api-key
+   ```
+
+4. Make sure you have the `caddy_network` Docker network created:
+
+   ```bash
+   docker network create caddy_network
+   ```
+
+5. Start the Qdrant service:
 
    ```bash
    docker-compose up -d
    ```
 
-## Usage
+## Configuration
 
-- Access Qdrant at [http://localhost:6333](http://localhost:6333) to interact with the vector search engine.
+This setup includes the following configuration:
 
-## Contributing
+- **Container Name**: `qdrant`
+- **Persistent Storage**: Data is stored in a Docker volume named `qdrant_data`
+- **Network**: Connected to `caddy_network` (external network, likely for reverse proxy)
+- **Resource Limits**: 1GB memory and 1 CPU
+- **Security**: Optional API key authentication
 
-1. Fork the repository.
-2. Create a new branch:
+## Accessing Qdrant
 
-   ```bash
-   git checkout -b feature/YourFeature
-   ```
+- **REST API**: `http://localhost:6333`
+- **gRPC API**: `localhost:6334`
+- **Web UI**: `http://localhost:6333/dashboard`
 
-3. Make your changes and commit them:
+## Basic Usage Examples
 
-   ```bash
-   git commit -m "Add your message"
-   ```
+### Create a Collection
 
-4. Push to the branch:
+```bash
+curl -X PUT 'http://localhost:6333/collections/my_collection' \
+    -H 'Content-Type: application/json' \
+    -d '{
+        "vectors": {
+            "size": 768,
+            "distance": "Cosine"
+        }
+    }'
+```
 
-   ```bash
-   git push origin feature/YourFeature
-   ```
+### Upload Vectors
 
-5. Open a pull request.
+```bash
+curl -X PUT 'http://localhost:6333/collections/my_collection/points' \
+    -H 'Content-Type: application/json' \
+    -d '{
+        "points": [
+            {
+                "id": 1,
+                "vector": [0.05, 0.61, 0.76, 0.74],
+                "payload": {
+                    "text": "Sample text",
+                    "category": "example"
+                }
+            }
+        ]
+    }'
+```
+
+### Search for Similar Vectors
+
+```bash
+curl -X POST 'http://localhost:6333/collections/my_collection/points/search' \
+    -H 'Content-Type: application/json' \
+    -d '{
+        "vector": [0.05, 0.61, 0.76, 0.74],
+        "limit": 3
+    }'
+```
+
+## Maintenance
+
+### Backup Data
+
+The Qdrant data is stored in the `qdrant_data` Docker volume. To back up this data:
+
+```bash
+docker run --rm -v qdrant_data:/data -v $(pwd):/backup alpine tar -czf /backup/qdrant-backup.tar.gz -C /data ./
+```
+
+### Restore Data
+
+```bash
+docker run --rm -v qdrant_data:/data -v $(pwd):/backup alpine sh -c "rm -rf /data/* && tar -xzf /backup/qdrant-backup.tar.gz -C /data"
+```
+
+## Additional Resources
+
+- [Qdrant Documentation](https://qdrant.tech/documentation/)
+- [Qdrant GitHub Repository](https://github.com/qdrant/qdrant)
+- [Qdrant REST API Reference](https://qdrant.github.io/qdrant/redoc/index.html)
+- [Qdrant Python Client](https://github.com/qdrant/qdrant-client)
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+See the [LICENSE](LICENSE) file for details.
