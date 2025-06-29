@@ -1,6 +1,6 @@
 services:
   qdrant:
-    image: qdrant/qdrant:v1.14.0
+    image: qdrant/qdrant:latest
     container_name: qdrant
     restart: always
     volumes:
@@ -9,11 +9,6 @@ services:
       - caddy_network
     env_file: 
       - .env
-    deploy:
-      resources:
-        limits:
-          memory: 1G
-          cpus: "1"
 
 volumes:
   qdrant_data:
