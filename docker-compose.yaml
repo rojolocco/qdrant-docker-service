@@ -1,6 +1,7 @@
 services:
   qdrant:
     image: "qdrant/qdrant:latest"
+    container_name: qdrant
     environment:
       - SERVICE_FQDN_QDRANT_6333
       - QDRANT__SERVICE__API_KEY=${QDRANT_API_KEY}
