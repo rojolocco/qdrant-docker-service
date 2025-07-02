@@ -1,16 +1,13 @@
 services:
   qdrant:
-    image: "qdrant/qdrant:latest"
+    image: qdrant/qdrant:latest
     container_name: qdrant
-    environment:
-      - SERVICE_FQDN_QDRANT_6333
-      - QDRANT__SERVICE__API_KEY=${QDRANT_API_KEY}
-    expose:
-      - "6333"
+    env_file:
+      - .env
     volumes:
-      - "qdrant_data:/qdrant/storage"
+      - qdrant_data:/qdrant/storage
     networks:
-      - caddy_network
+      - traefik_network
     healthcheck:
       test:
         - CMD-SHELL
@@ -20,8 +17,9 @@ services:
       retries: 3
 
 volumes:
-  qdrant_data: {}
+  qdrant_data:
+    driver: local
 
 networks:
-  caddy_network:
+  traefik_network:
     external: true
